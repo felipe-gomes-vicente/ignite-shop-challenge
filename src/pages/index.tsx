@@ -1,40 +1,93 @@
 import Image from "next/image";
+import Head from "next/head";
+import Link from "next/link";
+import { GetServerSideProps } from "next";
+import Stripe from "stripe";
+import useEmblaCarousel from "embla-carousel-react";
 
-import camiseta1 from "../assets/camisetas/1.png";
-import camiseta2 from "../assets/camisetas/2.png";
-import camiseta3 from "../assets/camisetas/3.png";
+import { stripe } from "../lib/stripe";
 
-import { HomeContainer, Product } from "../styles/pages/home";
+import { HomeContainer, Product, SliderContainer } from "../styles/pages/home";
 
-export default function Home() {
+interface HomeProps {
+  products: {
+    id: string;
+    name: string;
+    imageUrl: string;
+    price: string;
+  }[];
+}
+
+export default function Home({ products }: HomeProps) {
+  const [emblaRef] = useEmblaCarousel({
+    align: "start",
+    skipSnaps: false,
+    dragFree: true
+  })
+
   return (
-    <HomeContainer>
-      <Product>
-        <Image width={520} height={480} src={camiseta1} alt="" />
+    <>
+      <Head>
+        <title>Home | Ignite Shop</title>
+      </Head>
 
-        <footer>
-          <strong>Camiseta 1</strong>
-          <span>R$ 79,90</span>
-        </footer>
-      </Product>
+      <div style={{ overflow: "hidden", width: "100%" }} >
+        <HomeContainer>
+          <div className="embla" ref={emblaRef} >
+            <SliderContainer className="embla__container container">
+              {products.map(product => (
+                <Link
+                  key={product.id}
+                  href={`/product/${product.id}`}
+                  prefetch={false}
+                  passHref
+                >
+                  <Product className="embla__slide">
+                    <Image
+                      src={product.imageUrl}
+                      width={520}
+                      height={480}
+                      alt=""
+                      placeholder="blur"
+                      blurDataURL={product.imageUrl}
+                    />
 
-      <Product>
-        <Image width={520} height={480} src={camiseta2} alt="" />
-
-        <footer>
-          <strong>Camiseta 2</strong>
-          <span>R$ 79,90</span>
-        </footer>
-      </Product>
-
-      {/* <Product>
-        <Image width={520} height={480} src={camiseta3} alt="" />
-
-        <footer>
-          <strong>Camiseta 3</strong>
-          <span>R$ 79,90</span>
-        </footer>
-      </Product> */}
-    </HomeContainer>
+                    <footer>
+                      <div>
+                        <strong>{product.name}</strong>
+                        <span>{product.price}</span>
+                      </div>
+                    </footer>
+                  </Product>
+                </Link>
+              ))}
+            </SliderContainer>
+          </div>
+        </HomeContainer>
+      </div>
+    </>
   );
+}
+
+export const getServerSideProps: GetServerSideProps = async () => {
+  const response = await stripe.products.list({
+    expand: ['data.default_price']
+  })
+
+  const products = response.data.map(product => {
+    const price = product.default_price as Stripe.Price
+
+    return {
+      id: product.id,
+      name: product.name,
+      imageUrl: product.images[0],
+      price: price.unit_amount ? price.unit_amount / 100 : 0,
+    }
+  })
+
+  return {
+    props: {
+      products,
+    }
+  }
 }
