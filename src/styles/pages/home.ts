@@ -1,4 +1,5 @@
 import { styled } from "@stitches/react";
+import Link from "next/link";
 
 export const HomeContainer = styled("main", {
   width: "100%",
