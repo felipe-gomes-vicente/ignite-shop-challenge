@@ -4,6 +4,7 @@ import Link from "next/link";
 import { GetServerSideProps } from "next";
 import Stripe from "stripe";
 import useEmblaCarousel from "embla-carousel-react";
+import { MouseEvent, useEffect, useState } from "react";
 
 import { stripe } from "../lib/stripe";
 import { CartButton } from "@/components/CartButton";
@@ -26,6 +27,11 @@ export default function Home({ products }: HomeProps) {
 
   const { addToCart } = useCart();
 
+  function handleAddToCart(e: MouseEvent<HTMLButtonElement>, product: IProduct) {
+    e.preventDefault();
+    addToCart(product);
+  }
+
   return (
     <>
       <Head>
@@ -39,30 +45,30 @@ export default function Home({ products }: HomeProps) {
               {products.map(product => (
                 <>
                   <Link
-                  key={product.id}
-                  href={`/product/${product.id}`}
-                  prefetch={false}
-                  passHref
-                >
-                  <Product className="embla__slide">
-                    <Image
-                      src={product.imageUrl}
-                      width={520}
-                      height={480}
-                      alt=""
-                      placeholder="blur"
-                      blurDataURL={product.imageUrl}
-                    />
+                    key={product.id}
+                    href={`/product/${product.id}`}
+                    prefetch={false}
+                    passHref
+                  >
+                    <Product className="embla__slide">
+                      <Image
+                        src={product.imageUrl}
+                        width={520}
+                        height={480}
+                        alt=""
+                        placeholder="blur"
+                        blurDataURL={product.imageUrl}
+                      />
 
-                    <footer>
-                      <div>
-                        <strong>{product.name}</strong>
-                        <span>{product.price}</span>
-                      </div>
-                      <CartButton color={"green"} onClick={() => addToCart} />
-                    </footer>
-                  </Product>
-                </Link>
+                      <footer>
+                        <div>
+                          <strong>{product.name}</strong>
+                          <span>{product.price}</span>
+                        </div>
+                        <CartButton color={"green"} onClick={(e) => handleAddToCart(e, product)} />
+                      </footer>
+                    </Product>
+                  </Link>
                 </>
               ))}
             </SliderContainer>
