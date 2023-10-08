@@ -25,7 +25,7 @@ export default function Home({ products }: HomeProps) {
     dragFree: true
   });
 
-  const { addToCart } = useCart();
+  const { addToCart, checkIfItemAlreadyExists } = useCart();
 
   function handleAddToCart(e: MouseEvent<HTMLButtonElement>, product: IProduct) {
     e.preventDefault();
@@ -65,7 +65,12 @@ export default function Home({ products }: HomeProps) {
                           <strong>{product.name}</strong>
                           <span>{product.price}</span>
                         </div>
-                        <CartButton color={"green"} onClick={(e) => handleAddToCart(e, product)} />
+                        <CartButton 
+                          color={"green"} 
+                          size={"large"}
+                          disabled={checkIfItemAlreadyExists(product.id)}
+                          onClick={(e) => handleAddToCart(e, product)} 
+                        />
                       </footer>
                     </Product>
                   </Link>
@@ -91,9 +96,14 @@ export const getServerSideProps: GetServerSideProps = async () => {
       id: product.id,
       name: product.name,
       imageUrl: product.images[0],
-      price: price.unit_amount ? price.unit_amount / 100 : 0,
-    }
-  })
+      price: new Intl.NumberFormat('pt-br', {
+        style: 'currency',
+        currency: 'BRL',
+      }).format(price.unit_amount ? price.unit_amount / 100 : 0),
+      numberPrice: price.unit_amount ? price.unit_amount / 100 : 0,
+      defaultPriceId: price.id
+    };
+  });
 
   return {
     props: {
