@@ -6,16 +6,15 @@ import Stripe from "stripe";
 import useEmblaCarousel from "embla-carousel-react";
 
 import { stripe } from "../lib/stripe";
+import { CartButton } from "@/components/CartButton";
+import { useCart } from "@/hooks/useCart";
+import { IProduct } from "@/contexts/CartContext";
 
 import { HomeContainer, Product, SliderContainer } from "../styles/pages/home";
 
+
 interface HomeProps {
-  products: {
-    id: string;
-    name: string;
-    imageUrl: string;
-    price: string;
-  }[];
+  products: IProduct[];
 }
 
 export default function Home({ products }: HomeProps) {
@@ -23,7 +22,9 @@ export default function Home({ products }: HomeProps) {
     align: "start",
     skipSnaps: false,
     dragFree: true
-  })
+  });
+
+  const { addToCart } = useCart();
 
   return (
     <>
@@ -36,7 +37,8 @@ export default function Home({ products }: HomeProps) {
           <div className="embla" ref={emblaRef} >
             <SliderContainer className="embla__container container">
               {products.map(product => (
-                <Link
+                <>
+                  <Link
                   key={product.id}
                   href={`/product/${product.id}`}
                   prefetch={false}
@@ -57,9 +59,11 @@ export default function Home({ products }: HomeProps) {
                         <strong>{product.name}</strong>
                         <span>{product.price}</span>
                       </div>
+                      <CartButton color={"green"} onClick={() => addToCart} />
                     </footer>
                   </Product>
                 </Link>
+                </>
               ))}
             </SliderContainer>
           </div>
