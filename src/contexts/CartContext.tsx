@@ -13,6 +13,7 @@ export interface IProduct {
 interface CartContextData {
   cartItems: IProduct[];
   addToCart: (product: IProduct) => void;
+  removeCartItem: (productId: string) => void;
   checkIfItemAlreadyExists: (productId: string) => boolean;
 }
 
@@ -29,13 +30,24 @@ export function CartContextProvider({ children }: CartContextProviderProps) {
     setCartItems((state) => [...state, product]);
   }
 
+  function removeCartItem(productId: string) {
+    setCartItems((state) => state.filter((item) => item.id !== productId));
+  }
+
   function checkIfItemAlreadyExists(productId: string) {
     return cartItems.some((product) => product.id === productId);
   }
 
   return (
-    <CartContext.Provider value={{ cartItems, addToCart, checkIfItemAlreadyExists }}>
+    <CartContext.Provider 
+      value={{ 
+        cartItems, 
+        addToCart, 
+        removeCartItem,
+        checkIfItemAlreadyExists  
+      }}
+    >
       {children}
     </CartContext.Provider>
-  )
+  );
 }
