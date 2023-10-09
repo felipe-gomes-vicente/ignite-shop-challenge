@@ -3,11 +3,12 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
 import Stripe from "stripe";
+
 import { IProduct } from "../../contexts/CartContext";
 import { useCart } from "../../hooks/useCart";
 import { stripe } from "../../lib/stripe";
+
 import {
   ImageContainer,
   ProductContainer,
@@ -23,12 +24,10 @@ export default function Product({ product }: ProductProps) {
 
   const { addToCart, checkIfItemAlreadyExists } = useCart();
 
-  if (isFallback) {
-    return <p>Loading...</p>;
-  }
+  if(isFallback) return <p>Loading....</p>
 
   const itemAlreadyInCart = checkIfItemAlreadyExists(product.id);
-
+  
   return (
     <>
       <Head>
