@@ -16,7 +16,7 @@ export const SliderContainer = styled("div", {
   },
 });
 
-export const Product = styled("a", {
+export const Product = styled("div", {
   background: "linear-gradient(180deg, #1ea483 0%, #7465d4 100%)",
   borderRadius: 8,
   position: "relative",
