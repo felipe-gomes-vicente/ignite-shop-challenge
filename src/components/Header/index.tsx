@@ -1,19 +1,24 @@
-import Image from "next/image";
-import Link from "next/link";
-
-import { Cart } from "../Cart";
-import logoImg from "../../assets/logo.svg";
-
 import { HeaderContainer } from "./styles";
 
+import Image from "next/image";
+import Link from "next/link";
+import logoImg from "../../assets/logo.svg";
+import { Cart } from "../Cart";
+import { useRouter } from "next/router";
+
 export function Header() {
+  const { pathname } = useRouter();
+
+  const showCartButton = pathname !== "/success";
+
   return (
     <HeaderContainer>
       <Link href="/">
-        <Image width={130} height={52} src={logoImg} alt="" />
+        {/* <a> */}
+          <Image src={logoImg} alt="" />
+        {/* </a> */}
       </Link>
-
-      <Cart />
+      {showCartButton && <Cart />}
     </HeaderContainer>
-  )
+  );
 }

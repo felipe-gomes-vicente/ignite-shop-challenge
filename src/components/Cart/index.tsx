@@ -22,7 +22,7 @@ export function Cart() {
   }).format(cartTotal)
 
   const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] =
-  useState(false);
+    useState(false);
 
   async function handleCheckout() {
     try {
@@ -32,17 +32,18 @@ export function Cart() {
       });
 
       const { checkoutUrl } = response.data;
+      window.location.href = checkoutUrl;
 
-    } catch(err) {
+    } catch (err) {
       setIsCreatingCheckoutSession(false)
-      alert('FALHA AO REDICIONAR')
+      alert('Falha ao redirecionar ao checkout!')
     }
   }
 
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <CartButton />
+        <CartButton quantity={cartQuantity}  />
       </Dialog.Trigger>
 
       <Dialog.Portal>
@@ -78,14 +79,19 @@ export function Cart() {
             <FinalizationDetails>
               <div>
                 <span>Quantidade</span>
-                <p>{cartQuantity} {cartQuantity === 1 ? 'item' : 'itens'}</p>
+                <p>{cartQuantity} {cartQuantity > 1 ? "itens" : "item"}</p>
               </div>
               <div>
                 <span>Valor total</span>
                 <p>{formattedCartTotal}</p>
               </div>
             </FinalizationDetails>
-            <button>Finalizar compra</button>
+            <button
+              onClick={handleCheckout}
+              disabled={isCreatingCheckoutSession || cartQuantity <= 0}
+            >
+              Finalizar compra
+            </button>
           </CartFinalization>
         </CartContent>
       </Dialog.Portal>
